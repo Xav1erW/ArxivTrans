@@ -54,6 +54,6 @@ ArXiv Translator 是一个用于翻译ArXiv论文的Web应用程序。通过输�
    - 选择分割级别（如“section”或“subsection”）。
    - 点击“Translate”按钮开始翻译。
 
-> [!IMPORTANT] 注意
+> [!IMPORTANT]
 >
 > 本应用只提供对LaTeX源码的翻译，翻译后需要自行编译
