@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArXiv Translator</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-4xl"> <!-- 修改: 增加卡片宽度 -->
+        <h1 class="text-2xl font-bold mb-6 text-center">ArXiv Translator</h1>
+        <form method="POST" action="{{ url_for('index') }}">
+            <div class="mb-4">
+                <label for="arxiv_id" class="block text-gray-700 text-sm font-bold mb-2">ArXiv ID</label>
+                <input type="text" id="arxiv_id" name="arxiv_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+            </div>
+            <div class="mb-4">
+                <label for="api_key" class="block text-gray-700 text-sm font-bold mb-2">API Key</label>
+                <input type="password" id="api_key" name="api_key" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+            </div>
+            <div class="mb-6">
+                <label for="split_level" class="block text-gray-700 text-sm font-bold mb-2">Split Level</label>
+                <select id="split_level" name="split_level" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="section">Section</option>
+                    <option value="subsection">Subsection</option>
+                </select>
+            </div>
+            <div class="flex items-center justify-between">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Translate
+                </button>
+            </div>
+        </form>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="mt-4">
+                    {% for message in messages %}
+                        <p class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mt-4" role="alert">
+                            {{ message }}
+                        </p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <div id="progress" class="mt-4">
+            <h2 class="text-lg font-bold mb-2">Progress:</h2>
+            <ul id="progress-list" class="list-disc pl-5 h-40 overflow-y-auto"> <!-- 修改: 设置进度列表高度并启用滚动 -->
+                <!-- Progress messages will be appended here -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const eventSource = new EventSource('/stream');
+
+        eventSource.onmessage = function(event) {
+            const data = event.data;
+            const progressList = document.getElementById('progress-list');
+            const li = document.createElement('li');
+            li.textContent = data;
+            progressList.appendChild(li);
+        };
+
+        eventSource.onerror = function(err) {
+            console.error("EventSource failed:", err);
+            eventSource.close();
+        };
+    </script>
+</body>
+</html>
